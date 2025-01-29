@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
-include "hardware/pio.h"
+#include "hardware/pio.h"
 #include "hardware/clocks.h"
 #include "hardware/gpio.h"
 #include "pico/bootrom.h"
