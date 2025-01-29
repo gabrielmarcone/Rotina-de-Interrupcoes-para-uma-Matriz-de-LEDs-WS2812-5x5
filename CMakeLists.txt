@@ -41,7 +41,7 @@ pico_set_program_name(U4C4O12T "U4C4O12T")
 pico_set_program_version(U4C4O12T "0.1")
 
 # Generate PIO header
-pico_generate_pio_header(U4C4O12T ${CMAKE_CURRENT_LIST_DIR}/blink.pio)
+pico_generate_pio_header(U4C4O12T ${CMAKE_CURRENT_LIST_DIR}/ws2812.pio)
 
 # Modify the below lines to enable/disable output over UART/USB
 pico_enable_stdio_uart(U4C4O12T 1)
@@ -49,7 +49,10 @@ pico_enable_stdio_usb(U4C4O12T 1)
 
 # Add the standard library to the build
 target_link_libraries(U4C4O12T
-        pico_stdlib)
+        pico_stdlib
+        hardware_pio
+        hardware_adc
+        pico_bootrom)
 
 # Add the standard include files to the build
 target_include_directories(U4C4O12T PRIVATE

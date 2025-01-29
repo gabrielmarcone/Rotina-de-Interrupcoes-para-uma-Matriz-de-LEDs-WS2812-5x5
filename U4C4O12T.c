@@ -1,14 +1,17 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
-#include "hardware/pio.h"
+include "hardware/pio.h"
+#include "hardware/clocks.h"
+#include "hardware/gpio.h"
+#include "pico/bootrom.h"
 
-#include "blink.pio.h"
+#include "ws2812.pio.h"
 
-void blink_pin_forever(PIO pio, uint sm, uint offset, uint pin, uint freq) {
-    blink_program_init(pio, sm, offset, pin);
+void ws2812_pin_forever(PIO pio, uint sm, uint offset, uint pin, uint freq) {
+    ws2812_program_init(pio, sm, offset, pin);
     pio_sm_set_enabled(pio, sm, true);
 
-    printf("Blinking pin %d at %d Hz\n", pin, freq);
+    printf("ws2812ing pin %d at %d Hz\n", pin, freq);
 
     // PIO counter program takes 3 more cycles in total than we pass as
     // input (wait for n + 1; mov; jmp)
@@ -21,15 +24,15 @@ int main()
 {
     stdio_init_all();
 
-    // PIO Blinking example
+    // PIO ws2812ing example
     PIO pio = pio0;
-    uint offset = pio_add_program(pio, &blink_program);
+    uint offset = pio_add_program(pio, &ws2812_program);
     printf("Loaded program at %d\n", offset);
     
     #ifdef PICO_DEFAULT_LED_PIN
-    blink_pin_forever(pio, 0, offset, PICO_DEFAULT_LED_PIN, 3);
+    ws2812_pin_forever(pio, 0, offset, PICO_DEFAULT_LED_PIN, 3);
     #else
-    blink_pin_forever(pio, 0, offset, 6, 3);
+    ws2812_pin_forever(pio, 0, offset, 6, 3);
     #endif
     // For more pio examples see https://github.com/raspberrypi/pico-examples/tree/master/pio
 
