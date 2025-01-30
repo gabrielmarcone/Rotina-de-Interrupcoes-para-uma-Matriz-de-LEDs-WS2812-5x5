@@ -79,7 +79,7 @@ void blink_red_led() {
 }
 ```
 ### **Vídeo de demonstração do funcionamento do código**
-- **[Link para acessar o vídeo]
+- **[Link para acessar o vídeo]**
 
 ## 🔗 Referências
 - **[Documentação do RP2040](https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf)**
