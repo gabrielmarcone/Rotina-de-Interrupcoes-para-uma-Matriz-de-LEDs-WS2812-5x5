@@ -32,6 +32,17 @@ volatile int current_number = 0;
 absolute_time_t last_press_time_A;
 absolute_time_t last_press_time_B;
 
+// Tabela de padrões para exibição de números na matriz WS2812
+const uint32_t number_patterns[10][NUM_LEDS] = {
+    // Número 0
+    {0x000000, 0x000000, 0xFFFFFF, 0x000000, 0x000000, 
+     0xFFFFFF, 0x000000, 0xFFFFFF, 0x000000, 0xFFFFFF, 
+     0xFFFFFF, 0x000000, 0xFFFFFF, 0x000000, 0xFFFFFF, 
+     0xFFFFFF, 0x000000, 0xFFFFFF, 0x000000, 0xFFFFFF, 
+     0x000000, 0x000000, 0xFFFFFF, 0x000000, 0x000000},
+    // Adicionar padrões para os outros números de 1 a 9...
+};
+
 static void configure_pio() {
     gpio_init(LED_GREEN);
     gpio_init(LED_BLUE);
@@ -54,6 +65,13 @@ void blink_red_led() {
     static bool state = false;
     gpio_put(LED_RED, state);
     state = !state;
+}
+
+// Função para exibir números na matriz de LEDs
+void display_number(int number) {
+    for (int i = 0; i < NUM_LEDS; i++) {
+        pio_sm_put_blocking(pio, sm, number_patterns[number][i]);
+    }
 }
 
 // Interrupção para o botão A (incrementa número)
@@ -80,10 +98,20 @@ int main() {
     stdio_init_all();
     configure_pio();
 
+    // Ajusta clock para 128 MHz (se desejar)
+    bool ok = set_sys_clock_khz(128000, false);
+    if (ok) {
+        printf("Clock ajustado para %ld Hz\n", clock_get_hz(clk_sys));
+    }
+
+    // Inicializa o PIO (ws2812_program)
+    uint offset = pio_add_program(pio, &ws2812_program);
+    sm = pio_claim_unused_sm(pio, true);
+    ws2812_program_init(pio, sm, offset, LED_PIN);
+
     // Configura as interrupções para os botões
     gpio_set_irq_enabled_with_callback(BUTTON_A, GPIO_IRQ_EDGE_FALL, true, &button_a_irq_handler);
     gpio_set_irq_enabled_with_callback(BUTTON_B, GPIO_IRQ_EDGE_FALL, true, &button_b_irq_handler);
-
 
     while (true) {
         blink_red_led();
