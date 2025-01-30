@@ -156,24 +156,28 @@ void display_number(int number) {
     }
 }
 
-// Interrupção para o botão A (incrementa número)
-void button_a_irq_handler(uint gpio, uint32_t events) {
+// **Callback ÚNICO para interrupções de botões**
+void button_irq_handler(uint gpio, uint32_t events) {
     absolute_time_t now = get_absolute_time();
-    if (absolute_time_diff_us(last_press_time_A, now) > DEBOUNCE_TIME * 1000) {
-        current_number = (current_number + 1) % 10;
-        display_number(current_number);
-        last_press_time_A = now;
-    }
-}
 
-// Interrupção para o botão B (decrementa número)
-void button_b_irq_handler(uint gpio, uint32_t events) {
-    absolute_time_t now = get_absolute_time();
-    if (absolute_time_diff_us(last_press_time_B, now) > DEBOUNCE_TIME * 1000) {
-        current_number = (current_number - 1 + 10) % 10;
-        display_number(current_number);
-        last_press_time_B = now;
+    if (gpio == BUTTON_A) {  // **Botão A: Incrementa**
+        if (absolute_time_diff_us(last_press_time_A, now) > DEBOUNCE_TIME * 1000) {
+            current_number = (current_number + 1) % 10;
+            display_number(current_number);
+            last_press_time_A = now;
+            printf("Botão A pressionado. Número atual: %d\n", current_number);
+        }
+    } 
+    else if (gpio == BUTTON_B) {  // **Botão B: Decrementa**
+        if (absolute_time_diff_us(last_press_time_B, now) > DEBOUNCE_TIME * 1000) {
+            current_number = (current_number - 1 + 10) % 10;
+            display_number(current_number);
+            last_press_time_B = now;
+            printf("Botão B pressionado. Número atual: %d\n", current_number);
+        }
     }
+
+    gpio_acknowledge_irq(gpio, events);  // Confirma que a interrupção foi tratada
 }
 
 int main() {
@@ -192,8 +196,9 @@ int main() {
     ws2812_program_init(pio, sm, offset, LED_PIN);
 
     // Configura as interrupções para os botões
-    gpio_set_irq_enabled_with_callback(BUTTON_A, GPIO_IRQ_EDGE_FALL, true, &button_a_irq_handler);
-    gpio_set_irq_enabled_with_callback(BUTTON_B, GPIO_IRQ_EDGE_FALL, true, &button_b_irq_handler);
+    // Apenas UM callback**
+    gpio_set_irq_enabled_with_callback(BUTTON_A, GPIO_IRQ_EDGE_FALL, true, &button_irq_handler);
+    gpio_set_irq_enabled(BUTTON_B, GPIO_IRQ_EDGE_FALL, true);
 
     while (true) {
         blink_red_led();
