@@ -32,98 +32,113 @@ volatile int current_number = 0;
 absolute_time_t last_press_time_A;
 absolute_time_t last_press_time_B;
 
+// Variável global para cor atual
+uint32_t color;
+
 // Tabela de padrões para exibição de números na matriz WS2812
-const uint32_t number_patterns[10][NUM_LEDS] = {
+const double number_patterns[10][NUM_LEDS] = {
     // Número 0
     {
-        0x000000, 0x000000, 0xFFFFFF, 0x000000, 0x000000, 
-        0x000000, 0xFFFFFF, 0x000000, 0xFFFFFF, 0x000000, 
-        0x000000, 0xFFFFFF, 0x000000, 0xFFFFFF, 0x000000, 
-        0x000000, 0xFFFFFF, 0x000000, 0xFFFFFF, 0x000000, 
-        0x000000, 0x000000, 0xFFFFFF, 0x000000, 0x000000
+        0.0, 0.0, 0.3, 0.0, 0.0, 
+        0.0, 0.3, 0.0, 0.3, 0.0, 
+        0.0, 0.3, 0.0, 0.3, 0.0, // 30% de intensidade  
+        0.0, 0.3, 0.0, 0.3, 0.0, 
+        0.0, 0.0, 0.3, 0.0, 0.0
      },
     
-    // Número 1
+    // Número 0.3
     {
-        0x000000, 0x000000, 0xFFFFFF, 0x000000, 0x000000, 
-        0x000000, 0x000000, 0xFFFFFF, 0x000000, 0x000000, 
-        0x000000, 0x000000, 0xFFFFFF, 0x000000, 0x000000, 
-        0x000000, 0xFFFFFF, 0xFFFFFF, 0x000000, 0x000000, 
-        0x000000, 0x000000, 0xFFFFFF, 0x000000, 0x000000
+        0.0, 0.0, 0.3, 0.0, 0.0, 
+        0.0, 0.0, 0.3, 0.0, 0.0, 
+        0.0, 0.0, 0.3, 0.0, 0.0, 
+        0.0, 0.3, 0.3, 0.0, 0.0, 
+        0.0, 0.0, 0.3, 0.0, 0.0
     },
 
     // Número 2
     {
-        0x000000, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0x000000, 
-        0x000000, 0xFFFFFF, 0x000000, 0x000000, 0x000000, 
-        0x000000, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0x000000, 
-        0x000000, 0x000000, 0x000000, 0xFFFFFF, 0x000000, 
-        0x000000, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0x000000
+        0.0, 0.3, 0.3, 0.3, 0.0, 
+        0.0, 0.3, 0.0, 0.0, 0.0, 
+        0.0, 0.3, 0.3, 0.3, 0.0, 
+        0.0, 0.0, 0.0, 0.3, 0.0, 
+        0.0, 0.3, 0.3, 0.3, 0.0
     },
 
     // Número 3
     {
-        0x000000, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0x000000, 
-        0x000000, 0x000000, 0x000000, 0xFFFFFF, 0x000000, 
-        0x000000, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0x000000, 
-        0x000000, 0x000000, 0x000000, 0xFFFFFF, 0x000000, 
-        0x000000, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0x000000
+        0.0, 0.3, 0.3, 0.3, 0.0, 
+        0.0, 0.0, 0.0, 0.3, 0.0, 
+        0.0, 0.3, 0.3, 0.3, 0.0, 
+        0.0, 0.0, 0.0, 0.3, 0.0, 
+        0.0, 0.3, 0.3, 0.3, 0.0
     },
 
     // Número 4
     {
-        0x000000, 0xFFFFFF, 0x000000, 0x000000, 0x000000, 
-        0x000000, 0x000000, 0x000000, 0xFFFFFF, 0x000000, 
-        0x000000, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0x000000, 
-        0x000000, 0xFFFFFF, 0x000000, 0xFFFFFF, 0x000000, 
-        0x000000, 0xFFFFFF, 0x000000, 0xFFFFFF, 0x000000
+        0.0, 0.3, 0.0, 0.0, 0.0, 
+        0.0, 0.0, 0.0, 0.3, 0.0, 
+        0.0, 0.3, 0.3, 0.3, 0.0, 
+        0.0, 0.3, 0.0, 0.3, 0.0, 
+        0.0, 0.3, 0.0, 0.3, 0.0
     },
 
     // Número 5
     {
-        0x000000, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0x000000, 
-        0x000000, 0x000000, 0x000000, 0xFFFFFF, 0x000000, 
-        0x000000, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0x000000, 
-        0x000000, 0xFFFFFF, 0x000000, 0x000000, 0x000000, 
-        0x000000, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0x000000
+        0.0, 0.3, 0.3, 0.3, 0.0, 
+        0.0, 0.0, 0.0, 0.3, 0.0, 
+        0.0, 0.3, 0.3, 0.3, 0.0, 
+        0.0, 0.3, 0.0, 0.0, 0.0, 
+        0.0, 0.3, 0.3, 0.3, 0.0
     },
 
     // Número 6
     {
-        0x000000, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0x000000, 
-        0x000000, 0xFFFFFF, 0x000000, 0xFFFFFF, 0x000000, 
-        0x000000, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0x000000, 
-        0x000000, 0xFFFFFF, 0x000000, 0x000000, 0x000000, 
-        0x000000, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0x000000
+        0.0, 0.3, 0.3, 0.3, 0.0, 
+        0.0, 0.3, 0.0, 0.3, 0.0, 
+        0.0, 0.3, 0.3, 0.3, 0.0, 
+        0.0, 0.3, 0.0, 0.0, 0.0, 
+        0.0, 0.3, 0.3, 0.3, 0.0
     },
 
     // Número 7
     {
-        0x000000, 0x000000, 0xFFFFFF, 0x000000, 0x000000, 
-        0x000000, 0x000000, 0xFFFFFF, 0x000000, 0x000000, 
-        0x000000, 0x000000, 0xFFFFFF, 0x000000, 0x000000, 
-        0x000000, 0x000000, 0x000000, 0xFFFFFF, 0x000000, 
-        0x000000, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0x000000
+        0.0, 0.0, 0.3, 0.0, 0.0, 
+        0.0, 0.0, 0.3, 0.0, 0.0, 
+        0.0, 0.0, 0.3, 0.0, 0.0, 
+        0.0, 0.0, 0.0, 0.3, 0.0, 
+        0.0, 0.3, 0.3, 0.3, 0.0
     },
 
     // Número 8
     {
-        0x000000, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0x000000, 
-        0x000000, 0xFFFFFF, 0x000000, 0xFFFFFF, 0x000000, 
-        0x000000, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0x000000, 
-        0x000000, 0xFFFFFF, 0x000000, 0xFFFFFF, 0x000000, 
-        0x000000, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0x000000
+        0.0, 0.3, 0.3, 0.3, 0.0, 
+        0.0, 0.3, 0.0, 0.3, 0.0, 
+        0.0, 0.3, 0.3, 0.3, 0.0, 
+        0.0, 0.3, 0.0, 0.3, 0.0, 
+        0.0, 0.3, 0.3, 0.3, 0.0
     },
 
     // Número 9
     {
-        0x000000, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0x000000, 
-        0x000000, 0x000000, 0x000000, 0xFFFFFF, 0x000000, 
-        0x000000, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0x000000, 
-        0x000000, 0xFFFFFF, 0x000000, 0xFFFFFF, 0x000000, 
-        0x000000, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0x000000
+        0.0, 0.3, 0.3, 0.3, 0.0, 
+        0.0, 0.0, 0.0, 0.3, 0.0, 
+        0.0, 0.3, 0.3, 0.3, 0.0, 
+        0.0, 0.3, 0.0, 0.3, 0.0, 
+        0.0, 0.3, 0.3, 0.3, 0.0
     }
 };
+
+// Converte intensidade (0.0..1.0) de cada canal G, R, B em 24 bits no formato:
+// ( G << 24 ) | ( R << 16 ) | ( B << 8 )
+uint32_t matrix_rgb(double b, double r, double g) {
+    unsigned char R = (unsigned char)(r * 255.0);
+    unsigned char G = (unsigned char)(g * 255.0);
+    unsigned char B = (unsigned char)(b * 255.0);
+
+    return ( (uint32_t)G << 24 ) |
+           ( (uint32_t)R << 16 ) |
+           ( (uint32_t)B <<  8 );
+}
 
 static void configure_pio() {
     gpio_init(LED_GREEN);
@@ -152,16 +167,18 @@ void blink_red_led() {
 // Função para exibir números na matriz de LEDs
 void display_number(int number) {
     for (int i = 0; i < NUM_LEDS; i++) {
-        pio_sm_put_blocking(pio, sm, number_patterns[number][i]);
+        double intensity = number_patterns[number][i]; // Intensidade do LED
+        color = matrix_rgb(intensity, 0, intensity); // Ciano
+        pio_sm_put_blocking(pio, sm, color);
     }
 }
 
 // **Callback ÚNICO para interrupções de botões**
 void button_irq_handler(uint gpio, uint32_t events) {
-    absolute_time_t now = get_absolute_time();
+    absolute_time_t now = to_us_since_boot(get_absolute_time());
 
     if (gpio == BUTTON_A) {  // **Botão A: Incrementa**
-        if (absolute_time_diff_us(last_press_time_A, now) > DEBOUNCE_TIME * 1000) {
+        if (now - last_press_time_A > DEBOUNCE_TIME * 1000) {
             current_number = (current_number + 1) % 10;
             display_number(current_number);
             last_press_time_A = now;
@@ -169,7 +186,7 @@ void button_irq_handler(uint gpio, uint32_t events) {
         }
     } 
     else if (gpio == BUTTON_B) {  // **Botão B: Decrementa**
-        if (absolute_time_diff_us(last_press_time_B, now) > DEBOUNCE_TIME * 1000) {
+        if (now - last_press_time_B > DEBOUNCE_TIME * 1000) {
             current_number = (current_number - 1 + 10) % 10;
             display_number(current_number);
             last_press_time_B = now;
@@ -196,9 +213,8 @@ int main() {
     ws2812_program_init(pio, sm, offset, LED_PIN);
 
     // Configura as interrupções para os botões
-    // Apenas UM callback**
     gpio_set_irq_enabled_with_callback(BUTTON_A, GPIO_IRQ_EDGE_FALL, true, &button_irq_handler);
-    gpio_set_irq_enabled(BUTTON_B, GPIO_IRQ_EDGE_FALL, true);
+    gpio_set_irq_enabled_with_callback(BUTTON_B, GPIO_IRQ_EDGE_FALL, true, &button_irq_handler);
 
     while (true) {
         blink_red_led();
